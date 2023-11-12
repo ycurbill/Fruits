@@ -1,23 +1,27 @@
 import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
-const Home = () => {
+const Home = ({ navigation }) => {
     const [fruits, setFruits] = useState();
-    const [timesPressed, setTimesPressed] = useState(0);
 
     useEffect(() => {
         fetch('https://www.fruityvice.com/api/fruit/all')
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('Not found');
+                }
+                return res.json();
+            })
             .then(data => {
                 setFruits(data);
             })
             .catch(error => {
                 console.error('Error:', error);
             });
-    });
+    }, []);
 
-    const onPressFunction = () => {
-        setTimesPressed(current => current + 1);
+    const onPressFunction = (item) => {
+        navigation.navigate('Fruit', { item: item });
     };
 
     return (
@@ -27,7 +31,7 @@ const Home = () => {
             renderItem={({item}) => {
                 return (
                     <Pressable 
-                        onPress={onPressFunction}
+                        onPress={() => onPressFunction(item)}
                         style={({pressed}) => [
                             {
                                 backgroundColor: pressed ? 'rgba(111,35,177,0.4)' : 'rgba(111,35,177,0.8)',

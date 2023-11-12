@@ -6,6 +6,7 @@ import IconFavorite from 'react-native-vector-icons/Fontisto';
 
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Home from './src/screens/Home';
 import Favorites from './src/screens/Favorites';
@@ -17,9 +18,26 @@ const MyTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: 'rgba(222, 104, 130, 0.05)',
+    background: 'rgb(250, 249, 246)',
   },
 };
+
+const HomeStack = createNativeStackNavigator();
+
+const HomeStackScreen = () => {
+  return (
+      <HomeStack.Navigator
+        screenOptions={{
+          headerStyle: { backgroundColor: 'rgb(189,78,155)', borderBottomWidth: 2, borderBottomColor: 'green' },
+          headerTintColor: 'white',
+          headerTitleStyle: { fontWeight: 'bold' },
+        }}
+      >
+          <HomeStack.Screen name="Fruit List" component={Home} />
+          <HomeStack.Screen name="Fruit" component={Fruit} />
+      </HomeStack.Navigator>
+  );
+}
 
 const Tab = createBottomTabNavigator();
 
@@ -33,20 +51,20 @@ export default function App() {
         <Tab.Navigator
            screenOptions={({ route }) => ({
             tabBarIcon: ({ color, size }) => {
-              if (route.name === 'Fruits List') {
+              if (route.name === 'Fruits') {
                 return <IconFruit name='fruit-cherries' size={size} color={color} />;
               } else if (route.name === 'Favorites') {
                 return <IconFavorite name='favorite' size={size} color={color} />;
               }
             },
-            tabBarActiveTintColor: 'rgb(111,35,177)',
+            tabBarActiveTintColor: 'rgb(189,78,155)',
             tabBarInactiveTintColor: 'gray',
             tabBarStyle: {
               backgroundColor: 'rgba(222, 104, 130, 0.1)',
               elevation: 0,
             },
             headerStyle: {
-              backgroundColor: 'rgba(222, 104, 130, 0.2)',
+              backgroundColor: 'rgb(189,78,155)',
             },
             headerTintColor: 'white',
             headerTitleStyle: {
@@ -54,13 +72,14 @@ export default function App() {
             },
           })}
         >
-          <Tab.Screen 
-            name="Fruits List" 
-            component={Home}
+          <Tab.Screen
+            name="Fruits" 
+            component={HomeStackScreen}
+            options={{ headerShown: false }}
           />
-          <Tab.Screen 
+          <Tab.Screen
             name="Favorites" 
-            component={Favorites} 
+            component={Favorites}
           />
         </Tab.Navigator>
       </NavigationContainer>
