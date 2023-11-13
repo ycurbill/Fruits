@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { Table, Row, Rows } from 'react-native-table-component';
+import { LogBox } from 'react-native';
+
+import styles from './styles.Fruit';
+
+LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `textStyle` of type `array` supplied to `Cell`, expected `object`.']);
 
 const Fruit = ({ route }) => {
     const { item } = route.params;
@@ -60,12 +65,5 @@ const Fruit = ({ route }) => {
     )
 
 };
-
-const styles = StyleSheet.create({
-    container: { flex: 1, padding: 10, justifyContent: 'center', },
-    head: { height: 44, backgroundColor: 'rgba(111,35,177,0.4)' },
-    headText: { fontSize: 12, padding: 5, fontWeight: 'bold' , textAlign: 'center', color: 'white' },
-    text: { margin: 6, fontSize: 10, fontWeight: 'bold' , textAlign: 'center' },
-});
 
 export default Fruit;

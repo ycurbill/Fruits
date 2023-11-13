@@ -8,9 +8,11 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import Home from './src/screens/Home';
-import Favorites from './src/screens/Favorites';
-import Fruit from './src/screens/Fruit';
+import Home from './src/screens/Home/Home';
+import Favorites from './src/screens/Favorites/Favorites';
+import Fruit from './src/screens/Fruit/Fruit';
+
+import { FruitsContext } from './src/Contexts/FruitsContext';
 
 const { StatusBarManager } = NativeModules;
 
@@ -41,48 +43,79 @@ const HomeStackScreen = () => {
 
 const Tab = createBottomTabNavigator();
 
-export default function App() {
+const App = () => {
+  const [fruitsList, setFruitsList] = useState();
+
+  useEffect(() => {
+    fetch('https://www.fruityvice.com/api/fruit/all')
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Not found');
+        }
+        return res.json();
+      })
+      .then(data => {
+        const newData = data.map(item => ({ ...item, favorite: 'favorite-border' }));
+        setFruitsList(newData);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }, []);
+
   return (
-    <SafeAreaView style={{ 
-      flex: 1, 
-      paddingTop: Platform.OS === 'android' ? StatusBarManager.HEIGHT : 0,
-    }}>
-      <NavigationContainer theme={MyTheme}>
-        <Tab.Navigator
-           screenOptions={({ route }) => ({
-            tabBarIcon: ({ color, size }) => {
-              if (route.name === 'Fruits') {
-                return <IconFruit name='fruit-cherries' size={size} color={color} />;
-              } else if (route.name === 'Favorites') {
-                return <IconFavorite name='favorite' size={size} color={color} />;
-              }
-            },
-            tabBarActiveTintColor: 'rgb(189,78,155)',
-            tabBarInactiveTintColor: 'gray',
-            tabBarStyle: {
-              backgroundColor: 'rgba(222, 104, 130, 0.1)',
-              elevation: 0,
-            },
-            headerStyle: {
-              backgroundColor: 'rgb(189,78,155)',
-            },
-            headerTintColor: 'white',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-          })}
-        >
-          <Tab.Screen
-            name="Fruits" 
-            component={HomeStackScreen}
-            options={{ headerShown: false }}
-          />
-          <Tab.Screen
-            name="Favorites" 
-            component={Favorites}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
+      <SafeAreaView style={{ 
+        flex: 1, 
+        paddingTop: Platform.OS === 'android' ? StatusBarManager.HEIGHT : 0,
+      }}>
+        <NavigationContainer theme={MyTheme}>
+          <Tab.Navigator
+            screenOptions={({ route }) => ({
+              tabBarIcon: ({ color, size }) => {
+                if (route.name === 'Fruits') {
+                  return <IconFruit name='fruit-cherries' size={size} color={color} />;
+                } else if (route.name === 'Favorites') {
+                  return <IconFavorite name='favorite' size={size} color={color} />;
+                }
+              },
+              tabBarActiveTintColor: 'rgb(189,78,155)',
+              tabBarInactiveTintColor: 'gray',
+              tabBarStyle: {
+                backgroundColor: 'rgba(222, 104, 130, 0.1)',
+                elevation: 0,
+              },
+              headerStyle: {
+                backgroundColor: 'rgb(189,78,155)',
+              },
+              headerTintColor: 'white',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+            })}
+          >
+              <Tab.Screen
+                name="Fruits" 
+                options={{ headerShown: false }}
+              >
+                {() => (
+                  <FruitsContext.Provider value={{ fruitsList, setFruitsList }}>
+                    <HomeStackScreen />
+                  </FruitsContext.Provider>
+                )}
+              </Tab.Screen>
+              <Tab.Screen
+                name="Favorites"
+              >
+                {() => (
+                  <FruitsContext.Provider value={{ fruitsList, setFruitsList }}>
+                    <Favorites />
+                  </FruitsContext.Provider>
+                )}
+              </Tab.Screen>
+          </Tab.Navigator>
+        </NavigationContainer>
+      </SafeAreaView>
   );
-}
+};
+
+export default App;
