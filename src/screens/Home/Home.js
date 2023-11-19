@@ -1,21 +1,20 @@
-import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
-import { useState, useEffect, useContext } from "react";
-import IconFav from 'react-native-vector-icons/MaterialIcons';
-import { FruitsContext } from "../../Contexts/FruitsContext";
+import { View } from "react-native";
 import FruitList from "../../components/FruitList/FruitList";
 
+import { selectAllFruits, toggleFavorite } from "../../Redux/fruitListSlice";
+import { useDispatch, useSelector } from "react-redux";
+
 const Home = () => {
-    const { fruitsList , setFruitsList } = useContext(FruitsContext);
+    const fruitList = useSelector(state => selectAllFruits(state));
+    const dispatch = useDispatch();
 
     const onFavoritePress = (item) => {
-        setFruitsList(prevFruits => prevFruits.map(fruit => 
-            (fruit.id === item.id) ? {...fruit, favorite: (fruit.favorite === 'favorite') ? 'favorite-border' : 'favorite'} : fruit
-        ));
+        dispatch(toggleFavorite(item));
      };
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 2 }}>
-          <FruitList onFavoritePress={onFavoritePress} fruitsList={fruitsList} location='Home'/>
+          <FruitList onFavoritePress={onFavoritePress} fruitList={fruitList} location='Home'/>
         </View>
     );
 };

@@ -1,6 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, SafeAreaView, NativeModules, Platform } from 'react-native';
+import React, { useEffect } from 'react';
+import { SafeAreaView, NativeModules, Platform } from 'react-native';
 import IconFruit from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconFavorite from 'react-native-vector-icons/Fontisto';
 
@@ -12,7 +11,10 @@ import Home from './src/screens/Home/Home';
 import Favorites from './src/screens/Favorites/Favorites';
 import Fruit from './src/screens/Fruit/Fruit';
 
-import { FruitsContext } from './src/Contexts/FruitsContext';
+import store from './src/Redux/store';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { fetchFruits } from './src/Redux/fruitListSlice';
+
 
 const { StatusBarManager } = NativeModules;
 
@@ -44,24 +46,14 @@ const HomeStackScreen = () => {
 const Tab = createBottomTabNavigator();
 
 const App = () => {
-  const [fruitsList, setFruitsList] = useState();
+  const dispatch = useDispatch();
+  const fruitListStatus = useSelector(state => state.fruitList.status);
 
   useEffect(() => {
-    fetch('https://www.fruityvice.com/api/fruit/all')
-      .then(res => {
-        if (!res.ok) {
-          throw new Error('Not found');
-        }
-        return res.json();
-      })
-      .then(data => {
-        const newData = data.map(item => ({ ...item, favorite: 'favorite-border' }));
-        setFruitsList(newData);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  }, []);
+    if (fruitListStatus === 'idle') {
+      dispatch(fetchFruits());
+    }
+  }, [fruitListStatus, dispatch]);
 
   return (
       <SafeAreaView style={{ 
@@ -94,23 +86,15 @@ const App = () => {
             })}
           >
               <Tab.Screen
-                name="Fruits" 
+                name="Fruits"
                 options={{ headerShown: false }}
               >
-                {() => (
-                  <FruitsContext.Provider value={{ fruitsList, setFruitsList }}>
-                    <HomeStackScreen />
-                  </FruitsContext.Provider>
-                )}
+                {() =>  <HomeStackScreen />}
               </Tab.Screen>
               <Tab.Screen
                 name="Favorites"
               >
-                {() => (
-                  <FruitsContext.Provider value={{ fruitsList, setFruitsList }}>
-                    <Favorites />
-                  </FruitsContext.Provider>
-                )}
+                {() => <Favorites />}
               </Tab.Screen>
           </Tab.Navigator>
         </NavigationContainer>
@@ -118,4 +102,10 @@ const App = () => {
   );
 };
 
-export default App;
+export default () => {
+  return (
+    <Provider store={store}>
+      <App />
+    </Provider>
+  )
+};

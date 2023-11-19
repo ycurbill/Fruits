@@ -3,7 +3,7 @@ import { FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import FruitItem from '../FruitItem/FruitItem';
 
-const FruitList = ({ onFavoritePress, fruitsList, location }) => {
+const FruitList = ({ onFavoritePress, fruitList, location }) => {
     const navigation = useNavigation();
 
     const onPressFunction = (item) => {
@@ -12,7 +12,7 @@ const FruitList = ({ onFavoritePress, fruitsList, location }) => {
 
    return (
        <FlatList
-           data={fruitsList}
+           data={fruitList}
            renderItem={({item}) => {
                return (
                     (location === 'Favorites') ? (

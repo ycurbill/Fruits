@@ -1,14 +1,15 @@
-import { View, Text } from "react-native";
-import { FruitsContext } from "../../Contexts/FruitsContext";
-import { useContext } from "react";
+import { View } from "react-native";
 import FruitList from "../../components/FruitList/FruitList";
 
+import { selectAllFruits } from "../../Redux/fruitListSlice";
+import { useSelector } from "react-redux";
+
 const Favorites = () => {
-    const { fruitsList , setFruitsList } = useContext(FruitsContext);
+    const fruitList = useSelector(selectAllFruits);
   
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 2 }}>
-          <FruitList fruitsList={fruitsList} location='Favorites' />
+          <FruitList fruitList={fruitList} location='Favorites' />
         </View>
     );
 }
