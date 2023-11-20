@@ -8,10 +8,6 @@ export const fruitListSlice = createSlice({
         error: null
     },
     reducers: {
-        loadFruits: (state, action) => {
-            console.log("33333", action.payload);
-            state.fruitList = action.payload
-        },
         toggleFavorite: (state, action) => {
             const index = state.fruitList.findIndex(fruit => fruit.id === action.payload.id);
             if (index !== -1) {
@@ -35,7 +31,7 @@ export const fruitListSlice = createSlice({
       }
 })
 
-export const { loadFruits, toggleFavorite } = fruitListSlice.actions
+export const { toggleFavorite } = fruitListSlice.actions
 
 export default fruitListSlice.reducer
 
